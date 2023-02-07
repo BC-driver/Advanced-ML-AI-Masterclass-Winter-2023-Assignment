@@ -1,29 +1,13 @@
 import pandas as pd
+from sklearn.metrics import confusion_matrix, recall_score, precision_score, f1_score, accuracy_score, cohen_kappa_score
 
 
 def compute_confusion_matrix(y, yp):
-    # tp, tn, fp, fn
-    data = []
-    labels = []
+    labels = pd.DataFrame(y)[0].unique()
+    result = pd.DataFrame(columns=labels, index=labels)
+    result.loc[:, :] = 0
     for i in range(len(y)):
-        if not y[i] in labels:
-            labels.append(y[i])
-            data.append([0 for i in range(4)])
-    # print(labels)
-    result = pd.DataFrame(data=data, columns=["TP", "TN", "FP", "FN"], index=labels)
-    for i in range(len(y)):
-        if y[i] == yp[i]:
-            for idx, row in result.iterrows():
-                if idx == yp[i]:
-                    row["TP"] += 1
-                else:
-                    row["TN"] += 1
-        else:
-            for idx, row in result.iterrows():
-                if idx == yp[i]:
-                    row["FP"] += 1
-                else:
-                    row["FN"] += 1
+        result.loc[y[i], yp[i]] += 1
     return result
 
 
@@ -32,8 +16,11 @@ def display_confusion_matrix(m):
 
 
 def compute_recall_score(y, yp):
+    cm = compute_confusion_matrix(y, yp)
+    tp = 
+    result =
     # todo; implement this and return the correct value
-    return 0.0
+    return result
 
 
 def compute_precision_score(y, yp):
@@ -47,13 +34,20 @@ def compute_f1_score(y, yp):
 
 
 def compute_accuracy_score(y, yp):
-    # todo; implement this and return the correct value
-    return 0.0
+    cm = compute_confusion_matrix(y, yp)
+    correctCnt = 0
+    total = len(y)
+    for idx, row in cm.iterrows():
+        correctCnt += row[idx]
+    return correctCnt / total
 
 
 def compute_cohen_kappa_score(y, yp):
-    # todo; implement this and return the correct value
-    return 0.0
+    cm = compute_confusion_matrix(y, yp)
+    po = compute_accuracy_score(y, yp)
+    pe = cm.apply(lambda x: x.sum(), axis=1).transpose().dot(cm.apply(lambda x: x.sum(), axis=0))
+    pe /= (len(y) ** 2)
+    return (po - pe) / (1 - pe)
 
 
 def compute_fleiss_kappa_score(df):
@@ -65,7 +59,6 @@ def compute_fleiss_kappa_score(df):
 
 def compute_vote_agreement(row):
     result = row.mode()[0]
-    # todo; implement this and return the correct value
     return result
 
 
@@ -73,11 +66,21 @@ def compute_metrics(y, yp):
     m = compute_confusion_matrix(y, yp)
     display_confusion_matrix(m)
 
-    print(f"   Recall: {compute_recall_score(y, yp):.4}")
-    print(f"Precision: {compute_precision_score(y, yp):.4}")
-    print(f"       F1: {compute_f1_score(y, yp):.4}")
-    print(f" Accuracy: {compute_accuracy_score(y, yp):.4}")
-    print(f"        K: {compute_cohen_kappa_score(y, yp):.4}")
+    # print(f"   Recall: {compute_recall_score(y, yp):.4}")
+    # print(f"Precision: {compute_precision_score(y, yp):.4}")
+    # print(f"       F1: {compute_f1_score(y, yp):.4}")
+    # print(f" Accuracy: {compute_accuracy_score(y, yp):.4}")
+    # print(f"        K: {compute_cohen_kappa_score(y, yp):.4}")
+
+    print(
+        f"   Recall: {compute_recall_score(y, yp):.4} The value computed by Sklearn is: {recall_score(y, yp, average='macro'):.4}")
+    print(
+        f"Precision: {compute_precision_score(y, yp):.4} The value computed by Sklearn is: {precision_score(y, yp, average='macro'):.4}")
+    print(
+        f"       F1: {compute_f1_score(y, yp):.4}. The value computed by Sklearn is: {f1_score(y, yp, average='macro'):.4}")
+    print(f" Accuracy: {compute_accuracy_score(y, yp):.4} The value computed by Sklearn is: {accuracy_score(y, yp):.4}")
+    print(
+        f"        K: {compute_cohen_kappa_score(y, yp):.4} The value computed by Sklearn is: {cohen_kappa_score(y, yp):.4}")
 
 
 def main():
