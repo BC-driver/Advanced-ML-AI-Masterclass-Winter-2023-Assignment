@@ -1,29 +1,13 @@
 import pandas as pd
+from sklearn.metrics import confusion_matrix, recall_score, precision_score, f1_score, accuracy_score, cohen_kappa_score
 
 
 def compute_confusion_matrix(y, yp):
-    # tp, tn, fp, fn
-    data = []
-    labels = []
+    labels = pd.DataFrame(y)[0].unique()
+    result = pd.DataFrame(columns=labels, index=labels)
+    result.loc[:, :] = 0
     for i in range(len(y)):
-        if not y[i] in labels:
-            labels.append(y[i])
-            data.append([0 for i in range(4)])
-    # print(labels)
-    result = pd.DataFrame(data=data, columns=["TP", "TN", "FP", "FN"], index=labels)
-    for i in range(len(y)):
-        if y[i] == yp[i]:
-            for idx, row in result.iterrows():
-                if idx == yp[i]:
-                    row["TP"] += 1
-                else:
-                    row["TN"] += 1
-        else:
-            for idx, row in result.iterrows():
-                if idx == yp[i]:
-                    row["FP"] += 1
-                else:
-                    row["FN"] += 1
+        result.loc[y[i], yp[i]] += 1
     return result
 
 
@@ -32,40 +16,62 @@ def display_confusion_matrix(m):
 
 
 def compute_recall_score(y, yp):
-    # todo; implement this and return the correct value
-    return 0.0
+    cm = compute_confusion_matrix(y, yp)
+    tp = pd.Series(data=[cm[idx][idx] for idx, row in cm.iterrows()])
+    recallScores = tp / cm.apply(lambda x: x.sum(), axis=1).reset_index(drop=True)
+    result = recallScores.sum() / len(cm)
+    return result
 
 
 def compute_precision_score(y, yp):
-    # todo; implement this and return the correct value
-    return 0.0
+    cm = compute_confusion_matrix(y, yp)
+    tp = pd.Series(data=[cm[idx][idx] for idx, row in cm.iterrows()])
+    precisionScores = tp / cm.apply(lambda x: x.sum(), axis=0).reset_index(drop=True)
+    result = precisionScores.sum() / len(cm)
+    return result
 
 
 def compute_f1_score(y, yp):
-    # todo; implement this and return the correct value
-    return 0.0
+    cm = compute_confusion_matrix(y, yp)
+    tp = pd.Series(data=[cm[idx][idx] for idx, row in cm.iterrows()])
+    f1Scores = (tp * 2) / (cm.apply(lambda x: x.sum(), axis=0).reset_index(drop=True) +
+                           cm.apply(lambda x: x.sum(), axis=1).reset_index(drop=True))
+    result = f1Scores.sum() / len(cm)
+    return result
 
 
 def compute_accuracy_score(y, yp):
-    # todo; implement this and return the correct value
-    return 0.0
+    cm = compute_confusion_matrix(y, yp)
+    correctCnt = 0
+    total = len(y)
+    for idx, row in cm.iterrows():
+        correctCnt += row[idx]
+    return correctCnt / total
 
 
 def compute_cohen_kappa_score(y, yp):
-    # todo; implement this and return the correct value
-    return 0.0
+    cm = compute_confusion_matrix(y, yp)
+    po = compute_accuracy_score(y, yp)
+    pe = cm.apply(lambda x: x.sum(), axis=1).transpose().dot(cm.apply(lambda x: x.sum(), axis=0))
+    pe /= (len(y) ** 2)
+    return (po - pe) / (1 - pe)
 
 
 def compute_fleiss_kappa_score(df):
     # Fleiss' Kappa score is an extension of Cohen's Kappa for more than 2 annotators
-    # todo; implement this and return the correct value
-
-    return 0.0
+    N = df.shape[0]
+    n = df.shape[1]
+    frequency = df.apply(lambda x: x.value_counts(), axis=1).fillna(0)
+    pj = frequency.apply(lambda x: x.sum(), axis=0) / (N * n)
+    pe = (pj ** 2).sum()
+    pi = frequency.apply(lambda x: (x ** 2).sum() - n, axis=1) / (n * (n - 1))
+    po = pi.sum() / N
+    result = (po - pe) / (1 - pe)
+    return result
 
 
 def compute_vote_agreement(row):
     result = row.mode()[0]
-    # todo; implement this and return the correct value
     return result
 
 
