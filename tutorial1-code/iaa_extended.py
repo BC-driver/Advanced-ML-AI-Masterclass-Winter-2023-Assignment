@@ -1,5 +1,4 @@
 import pandas as pd
-from sklearn.metrics import confusion_matrix, recall_score, precision_score, f1_score, accuracy_score, cohen_kappa_score
 
 
 def compute_confusion_matrix(y, yp):
