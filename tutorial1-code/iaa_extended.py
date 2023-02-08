@@ -92,17 +92,17 @@ def main():
     # compute the agreed label via majority voting
     df["majority_label"] = df.apply(compute_vote_agreement, axis=1)
 
-    # print(df.head())
-    # print()
-    #
-    # print("--- Comparing annotator 1 vs annotator 2")
-    # compute_metrics(df.annot1.values, df.annot2.values)
-    # print("--- Comparing majority vs annotator 1")
-    # compute_metrics(df.majority_label.values, df.annot1.values)
-    # print("--- Comparing majority vs annotator 2")
-    # compute_metrics(df.majority_label.values, df.annot2.values)
-    # print("--- Comparing majority vs annotator 3")
-    # compute_metrics(df.majority_label.values, df.annot3.values)
+    print(df.head())
+    print()
+
+    print("--- Comparing annotator 1 vs annotator 2")
+    compute_metrics(df.annot1.values, df.annot2.values)
+    print("--- Comparing majority vs annotator 1")
+    compute_metrics(df.majority_label.values, df.annot1.values)
+    print("--- Comparing majority vs annotator 2")
+    compute_metrics(df.majority_label.values, df.annot2.values)
+    print("--- Comparing majority vs annotator 3")
+    compute_metrics(df.majority_label.values, df.annot3.values)
 
     print(f" Fleiss Kappa: {compute_fleiss_kappa_score(df[['annot1', 'annot2', 'annot3']]):.4}")
 
