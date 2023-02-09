@@ -6,6 +6,7 @@ from sklearn.preprocessing import LabelBinarizer
 from random import sample
 
 import torch
+import matplotlib.pyplot as plt
 
 from torch.utils.data import IterableDataset, DataLoader
 
@@ -62,12 +63,12 @@ def main():
     # What would be the most suitable loss function to use here?
     # Have a look at https://pytorch.org/docs/stable/nn.html#loss-functions and choose the right one.
     # Please note that the last activation function is already a sigmoid, so BCE Loss can be a good option.
-    loss_fn = None  # todo; replace this with a suitable loss function
+    loss_fn = torch.nn.BCELoss()  # todo; replace this with a suitable loss function
 
     # Use the optim package to define an Optimizer that will update the weights of the model for us.
     # Have a look at https://pytorch.org/docs/stable/optim.html for more options
     # Adam is usually a safe option, and you have to pass model.parameters() to optimise correctly
-    optimizer = None  # todo; replace this with a suitable function
+    optimizer = torch.optim.Adam(model.parameters()) # todo; replace this with a suitable function
 
     # number of epochs to train on, you can check if this is decreasing
     num_epochs = 300
@@ -92,9 +93,11 @@ def main():
             optimizer.step()
 
         avg_loss = total_loss / len(train_dl)
-        avg_loss_list.append(avg_loss)
+        avg_loss_list.append(float(avg_loss))
         print(f"Epoch: {epoch}, Training loss: {avg_loss}")
 
+    plt.plot([i + 1 for i in range(len(avg_loss_list))], avg_loss_list)
+    plt.show()
     # todo; plot the average loss using matplotlib
 
     # todo; test the Precision, Recall, F1 of the model - you can use sklearn functions
