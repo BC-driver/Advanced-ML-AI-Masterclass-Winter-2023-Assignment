@@ -50,7 +50,7 @@ def Scompute_fleiss_kappa_score(df):
 
 def main():
     df = pd.read_csv("data/coarse_discourse_dataset.csv")
-    print(f" Fleiss Kappa: {compute_fleiss_kappa_score(df[['annot1', 'annot2', 'annot3']]):.4}")
+    print(f" Fleiss Kappa: {Scompute_fleiss_kappa_score(df[['annot1', 'annot2', 'annot3']]):.4}")
 
 
 if __name__ == "__main__":
