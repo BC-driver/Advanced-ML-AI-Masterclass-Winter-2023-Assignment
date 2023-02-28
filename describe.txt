@@ -1,0 +1,7 @@
+Dear professor,I am the leader of the team Alpha . Here is our dataset and objectives.
+
+dataset : Using datasets that we built ourselves
+    our dataset will be multiple 4-color dot sets that each sets constructed a picture. 
+objectives:
+    1. build a MLP model to classify the dots and predict the overall shape of the picture
+    2. Try to find a universial MLP network to solve the problem above. 
